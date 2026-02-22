@@ -2,6 +2,7 @@
 #include <vector>
 #include <iomanip>
 #include <limits>
+#include <fstream>
 
 using namespace std;
 
@@ -39,6 +40,10 @@ public:
              << setw(12) << fixed << setprecision(2)
              << calculateEnergy() << endl;
     }
+
+    string toFileString() const {
+        return name + "," + to_string(powerRating) + "," + to_string(usageHours);
+    }
 };
 
 vector<Appliance> appliances;
@@ -46,6 +51,21 @@ vector<Appliance> appliances;
 void clearInput() {
     cin.clear();
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
+}
+
+void saveToFile() {
+    ofstream file("appliances.txt");
+
+    if (!file) {
+        cout << "Error saving file!\n";
+        return;
+    }
+
+    for (size_t i = 0; i < appliances.size(); i++) {
+        file << appliances[i].toFileString() << endl;
+    }
+
+    file.close();
 }
 
 void registerAppliance() {
@@ -161,7 +181,7 @@ void menu() {
         cout << "2. View Appliances\n";
         cout << "3. Search Appliance\n";
         cout << "4. Calculate Billing\n";
-        cout << "5. Exit\n";
+        cout << "5. Save & Exit\n";
         cout << "Enter choice: ";
 
         cin >> choice;
@@ -177,8 +197,12 @@ void menu() {
             case 2: viewAppliances(); break;
             case 3: searchAppliance(); break;
             case 4: calculateBilling(); break;
-            case 5: cout << "Exiting program...\n"; break;
-            default: cout << "Invalid choice. Try again.\n";
+            case 5:
+                saveToFile();
+                cout << "Data saved successfully. Exiting program...\n";
+                break;
+            default:
+                cout << "Invalid choice. Try again.\n";
         }
 
     } while (choice != 5);
