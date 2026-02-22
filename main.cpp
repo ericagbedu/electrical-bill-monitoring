@@ -55,14 +55,33 @@ void clearInput() {
 
 void saveToFile() {
     ofstream file("appliances.txt");
+    if (!file) return;
 
-    if (!file) {
-        cout << "Error saving file!\n";
-        return;
-    }
-
-    for (size_t i = 0; i < appliances.size(); i++) {
+    for (size_t i = 0; i < appliances.size(); i++)
         file << appliances[i].toFileString() << endl;
+
+    file.close();
+}
+
+void loadFromFile() {
+    ifstream file("appliances.txt");
+    if (!file) return;
+
+    appliances.clear();
+    string line;
+
+    while (getline(file, line)) {
+        size_t firstComma = line.find(",");
+        size_t secondComma = line.rfind(",");
+
+        if (firstComma == string::npos || secondComma == string::npos)
+            continue;
+
+        string name = line.substr(0, firstComma);
+        double power = stod(line.substr(firstComma + 1, secondComma - firstComma - 1));
+        double hours = stod(line.substr(secondComma + 1));
+
+        appliances.push_back(Appliance(name, power, hours));
     }
 
     file.close();
@@ -115,9 +134,8 @@ void viewAppliances() {
          << setw(12) << "Energy(kWh)" << endl;
     cout << "-------------------------------------------------------------\n";
 
-    for (size_t i = 0; i < appliances.size(); i++) {
+    for (size_t i = 0; i < appliances.size(); i++)
         appliances[i].display();
-    }
 }
 
 void searchAppliance() {
@@ -143,11 +161,8 @@ void searchAppliance() {
 
 double calculateTotalEnergy() {
     double total = 0;
-
-    for (size_t i = 0; i < appliances.size(); i++) {
+    for (size_t i = 0; i < appliances.size(); i++)
         total += appliances[i].calculateEnergy();
-    }
-
     return total;
 }
 
@@ -209,6 +224,7 @@ void menu() {
 }
 
 int main() {
+    loadFromFile();
     menu();
     return 0;
 }
