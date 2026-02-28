@@ -9,8 +9,8 @@ using namespace std;
 class Appliance {
 private:
     string name;
-    double powerRating;
-    double usageHours;
+    double powerRating;   // Watts
+    double usageHours;    // Hours per day
 
 public:
     Appliance() {
@@ -30,7 +30,7 @@ public:
     double getUsage() const { return usageHours; }
 
     double calculateEnergy() const {
-        return (powerRating * usageHours) / 1000.0;
+        return (powerRating * usageHours) / 1000.0; // kWh
     }
 
     void display() const {
@@ -48,29 +48,31 @@ public:
 
 vector<Appliance> appliances;
 
-void clearInput() {
-    cin.clear();
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-}
+// ================= FILE FUNCTIONS =================
 
 void saveToFile() {
     ofstream file("appliances.txt");
+
     if (!file) {
         cout << "Error saving file!\n";
         return;
     }
 
-    for (size_t i = 0; i < appliances.size(); i++)
+    for (size_t i = 0; i < appliances.size(); i++) {
         file << appliances[i].toFileString() << endl;
+    }
 
     file.close();
 }
 
 void loadFromFile() {
     ifstream file("appliances.txt");
-    if (!file) return;
+
+    if (!file)
+        return;
 
     appliances.clear();
+
     string line;
 
     while (getline(file, line)) {
@@ -90,6 +92,15 @@ void loadFromFile() {
     file.close();
 }
 
+// ================= INPUT VALIDATION =================
+
+void clearInput() {
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+}
+
+// ================= CORE FUNCTIONS =================
+
 void registerAppliance() {
     string name;
     double power;
@@ -106,6 +117,7 @@ void registerAppliance() {
 
     cout << "Enter power rating (Watts): ";
     cin >> power;
+
     if (cin.fail() || power <= 0) {
         cout << "Power must be greater than 0!\n";
         clearInput();
@@ -114,6 +126,7 @@ void registerAppliance() {
 
     cout << "Enter daily usage hours (0-24): ";
     cin >> hours;
+
     if (cin.fail() || hours < 0 || hours > 24) {
         cout << "Usage hours must be between 0 and 24!\n";
         clearInput();
@@ -137,8 +150,9 @@ void viewAppliances() {
          << setw(12) << "Energy(kWh)" << endl;
     cout << "-------------------------------------------------------------\n";
 
-    for (size_t i = 0; i < appliances.size(); i++)
+    for (size_t i = 0; i < appliances.size(); i++) {
         appliances[i].display();
+    }
 }
 
 void searchAppliance() {
@@ -163,14 +177,18 @@ void searchAppliance() {
         }
     }
 
-    if (!found)
+    if (!found) {
         cout << "Appliance not found.\n";
+    }
 }
 
 double calculateTotalEnergy() {
     double total = 0;
-    for (size_t i = 0; i < appliances.size(); i++)
+
+    for (size_t i = 0; i < appliances.size(); i++) {
         total += appliances[i].calculateEnergy();
+    }
+
     return total;
 }
 
@@ -209,6 +227,8 @@ void calculateBilling() {
     }
 }
 
+// ================= MENU =================
+
 void menu() {
     int choice;
 
@@ -230,10 +250,18 @@ void menu() {
         }
 
         switch (choice) {
-            case 1: registerAppliance(); break;
-            case 2: viewAppliances(); break;
-            case 3: searchAppliance(); break;
-            case 4: calculateBilling(); break;
+            case 1:
+                registerAppliance();
+                break;
+            case 2:
+                viewAppliances();
+                break;
+            case 3:
+                searchAppliance();
+                break;
+            case 4:
+                calculateBilling();
+                break;
             case 5:
                 saveToFile();
                 cout << "Data saved successfully. Exiting program...\n";
@@ -244,6 +272,8 @@ void menu() {
 
     } while (choice != 5);
 }
+
+// ================= MAIN =================
 
 int main() {
     loadFromFile();
