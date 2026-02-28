@@ -69,9 +69,9 @@ void loadFromFile() {
     ifstream file("appliances.txt");
 
     if (!file)
-        return;
+        return; // No file yet (first run)
 
-    appliances.clear();
+    appliances.clear();  // Prevent duplicate loading
 
     string line;
 
@@ -134,6 +134,7 @@ void registerAppliance() {
     }
 
     appliances.push_back(Appliance(name, power, hours));
+
     cout << "Appliance registered successfully!\n";
 }
 
